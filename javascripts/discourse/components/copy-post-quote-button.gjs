@@ -7,13 +7,15 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import discourseLater from "discourse/lib/later";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { buildQuote } from "discourse/lib/quote";
+import { i18n } from "discourse-i18n";
 
-export default class CopyPostQuoteButton extends Component {
-  
+export default class CopyPostQuoteButton extends Component { 
   @tracked icon = "quote-right";
+  @tracked quoteText = "";
+  @tracked showCopyTooltip = false;
 
   @action
-  async copyPostQuote() {
+  async prepareQuote() {
     const postId = this.args.post.id;
     if (!postId) {
       return;
@@ -27,8 +29,28 @@ export default class CopyPostQuoteButton extends Component {
         throw new Error("Failed to fetch post data");
       }
 
-      const quote = buildQuote(post, post.raw, { full: true });
-      await clipboardCopy(quote);
+      this.quoteText = buildQuote(post, post.raw, { full: true });
+      this.icon = "clipboard";
+      
+      // Show the copy tooltip/message
+      this.showCopyTooltip = true;
+      discourseLater(() => {
+        this.showCopyTooltip = false;
+      }, 3000); // Hide after 3 seconds
+    } catch (error) {
+      popupAjaxError(error);
+      this.icon = "xmark";
+    }
+  }
+
+  @action
+  async copyQuote() {
+    if (!this.quoteText) {
+      return;
+    }
+
+    try {
+      await clipboardCopy(this.quoteText);
       this.icon = "check";
     } catch (error) {
       popupAjaxError(error);
@@ -36,6 +58,7 @@ export default class CopyPostQuoteButton extends Component {
     } finally {
       discourseLater(() => {
         this.icon = "quote-right";
+        this.quoteText = "";
       }, 2000);
     }
   }
@@ -49,13 +72,28 @@ export default class CopyPostQuoteButton extends Component {
     }
   }
 
-  <template>
-    <DButton
-      class="post-action-menu__copy-post-quote btn-flat"
-      @title={{themePrefix "title"}}
-      @icon={{this.icon}}
-      @action={{this.copyPostQuote}}
-      ...attributes
-    />
+  <template>  
+    {{#if this.quoteText}}
+      <div class="copy-post-quote-button">
+        {{#if this.showCopyTooltip}}
+          <span class="copy-tooltip">{{i18n (themePrefix "tooltip_title")}}</span>
+        {{/if}}
+        <DButton
+          class="post-action-menu__copy-quote --copy btn-flat"
+          @title={{themePrefix "copy_quote_title"}}
+          @icon={{this.icon}}
+          @action={{this.copyQuote}}
+          ...attributes
+        />
+      </div>
+    {{else}}
+      <DButton
+        class="post-action-menu__copy-quote --prepare btn-flat"
+        @title={{themePrefix "prepare_quote_title"}}
+        @icon={{this.icon}}
+        @action={{this.prepareQuote}}
+        ...attributes
+      />
+    {{/if}}
   </template>
 }

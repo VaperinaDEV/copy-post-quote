@@ -1,13 +1,46 @@
 .post-action-menu {
-  &__copy-post-quote {
-    .d-icon-spinner {
-      animation: rotate-forever 1s infinite linear;
+  &__copy-quote {
+    &.--prepare {
+      .d-icon-spinner {
+        animation: rotate-forever 1s infinite linear;
+      }
+      .d-icon-xmark {
+        color: var(--danger);
+      }
     }
-    .d-icon-check {
-      color: var(--success);
+    &.--copy {
+      .d-icon-check {
+        color: var(--success);
+      }
+      .d-icon-xmark {
+        color: var(--danger);
+      }
     }
-    .d-icon-xmark {
-      color: var(--danger);
+  }
+}
+
+.copy-post-quote-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .copy-tooltip {
+    position: absolute;
+    margin-top: -1.75em;
+    margin-left: var(--control-margin);
+    padding: 0 0.25em;
+    background: var(--secondary);
+    box-shadow: 0 0 0 1px var(--primary-300);
+    border-radius: 2px;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 6px;
+      background: var(--primary-300);
+      clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
     }
   }
 }

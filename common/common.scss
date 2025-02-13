@@ -1,7 +1,7 @@
 .post-action-menu {
   &__copy-post-quote {
     .d-icon-spinner {
-      animation: rotate-forever 1s linear;
+      animation: rotate-forever 1s infinite linear;
     }
     .d-icon-check {
       color: var(--success);

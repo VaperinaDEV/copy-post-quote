@@ -1,0 +1,4 @@
+en:
+  theme_metadata:
+    description: "A button in the post menu to copy the post's quote to the clipboard"
+  title: "Copy the quote of this post"

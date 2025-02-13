@@ -1,0 +1,13 @@
+.post-action-menu {
+  &__copy-post-quote {
+    .d-icon-spinner {
+      animation: rotate-forever 1s linear;
+    }
+    .d-icon-check {
+      color: var(--success);
+    }
+    .d-icon-xmark {
+      color: var(--danger);
+    }
+  }
+}
